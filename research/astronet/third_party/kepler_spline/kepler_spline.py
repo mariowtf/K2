@@ -41,11 +41,17 @@ def kepler_spline(time, flux, bkspace=1.5, maxiter=5, outlier_cut=3):
         values.
     mask: Boolean mask indicating the points used to fit the final spline.
   """
+  print("kepler_spline(time, flux, bkspace={}, maxiter={}, outlier_cut={}".format(bkspace, maxiter, outlier_cut))
+  print("time:", time)
+  print("flux:", flux)
+  print("Rescaling time")
   # Rescale time into [0, 1].
   t_min = np.min(time)
   t_max = np.max(time)
   time = (time - t_min) / (t_max - t_min)
   bkspace /= (t_max - t_min)  # Rescale bucket spacing.
+  print("time:", time)
+  print("flux:", flux)
 
   # Values of the best fitting spline evaluated at the time points.
   spline = None
@@ -53,7 +59,8 @@ def kepler_spline(time, flux, bkspace=1.5, maxiter=5, outlier_cut=3):
   # Mask indicating the points used to fit the spline.
   mask = None
 
-  for _ in range(maxiter):
+  for i in range(maxiter):
+    print("i =", i)
     if spline is None:
       mask = np.ones_like(time, dtype=np.bool)  # Try to fit all points.
     else:
@@ -68,6 +75,7 @@ def kepler_spline(time, flux, bkspace=1.5, maxiter=5, outlier_cut=3):
 
       mask = new_mask
 
+    print("mask =", mask)
     try:
       with warnings.catch_warnings():
         # Suppress warning messages printed by pydlutils.bspline. Instead we
@@ -75,10 +83,15 @@ def kepler_spline(time, flux, bkspace=1.5, maxiter=5, outlier_cut=3):
         warnings.simplefilter("ignore")
 
         # Fit the spline on non-outlier points.
-        curve = bspline.iterfit(time[mask], flux[mask], bkspace=bkspace)[0]
+        print("Fitting spline")
+        curve, curve_mask = bspline.iterfit(time[mask], flux[mask], bkspace=bkspace)
+        print("Coeffcients =", curve.coeff)
+        print("Curve mask =", curve_mask)
 
       # Evaluate spline at the time points.
-      spline = curve.value(time)[0]
+      spline, eval_mask = curve.value(time)
+      print("spline =", spline)
+      print("eval_mask =", eval_mask)
     except (IndexError, TypeError) as e:
       raise SplineError(
           "Fitting spline failed with error: '%s'. This might be caused by the "
