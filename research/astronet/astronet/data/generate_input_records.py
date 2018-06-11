@@ -128,7 +128,7 @@ parser.add_argument(
 
 # Name and values of the column in the input CSV file to use as training labels.
 _LABEL_COLUMN = "av_training_set"
-_ALLOWED_LABELS = {"PC", "AFP", "NTP"}
+_ALLOWED_LABELS = {"C", "J", "E"}
 
 
 def _set_float_feature(ex, name, value):
