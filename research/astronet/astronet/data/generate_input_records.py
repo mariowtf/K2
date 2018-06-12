@@ -126,6 +126,12 @@ parser.add_argument(
     default=5,
     help="Number of subprocesses for processing the TCEs in parallel.")
 
+parser.add_argument(
+    "--K2_campaign",
+    type=str,
+    required=True,
+    help="Campaign where data was taken.")
+
 # Name and values of the column in the input CSV file to use as training labels.
 _LABEL_COLUMN = "av_training_set"
 _ALLOWED_LABELS = {"C", "J", "E"}
@@ -164,7 +170,7 @@ def _process_tce(tce):
   """
   # Read and process the light curve.
   time, flux = preprocess.read_and_process_light_curve(tce.kepid,
-                                                       FLAGS.kepler_data_dir)
+                                                       FLAGS.kepler_data_dir, FLAGS.K2_campaign)
   time, flux = preprocess.phase_fold_and_sort_light_curve(
       time, flux, tce.tce_period, tce.tce_time0bk)
 
