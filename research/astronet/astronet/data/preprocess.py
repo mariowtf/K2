@@ -27,13 +27,14 @@ from light_curve_util import util
 from third_party.kepler_spline import kepler_spline
 
 
-def read_and_process_light_curve(kepid, kepler_data_dir, max_gap_width=0.75):
+def read_and_process_light_curve(kepid, kepler_data_dir, campaign, max_gap_width=0.75):
   """Reads a light curve, fits a B-spline and divides the curve by the spline.
 
   Args:
     kepid: Kepler id of the target star.
     kepler_data_dir: Base directory containing Kepler data. See
         kepler_io.kepler_filenames().
+    campaign: K2 campaign where data was taken.
     max_gap_width: Gap size (in days) above which the light curve is split for
         the fitting of B-splines.
 
@@ -46,7 +47,7 @@ def read_and_process_light_curve(kepid, kepler_data_dir, max_gap_width=0.75):
     ValueError: If the spline could not be fit.
   """
   # Read the Kepler light curve.
-  file_names = kepler_io.kepler_filenames(kepler_data_dir, kepid)
+  file_names = kepler_io.kepler_filenames(kepler_data_dir, kepid, campaign)
   if not file_names:
     raise IOError("Failed to find .csv file in %s for EPIC ID %s" %
                   (kepler_data_dir, kepid))
