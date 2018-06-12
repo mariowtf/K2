@@ -75,6 +75,7 @@ SHORT_CADENCE_QUARTER_PREFIXES = {
 
 def kepler_filenames(base_dir,
                      kep_id,
+                     campaign,
                      long_cadence=True,
                      quarters=None,
                      injected_group=None,
@@ -111,31 +112,33 @@ def kepler_filenames(base_dir,
     A list of filenames.
   """
   # Pad the Kepler id with zeros to length 9.
-  kep_id = "%.9d" % int(kep_id)
+  #kep_id = "%.9d" % int(kep_id)
 
-  quarter_prefixes, cadence_suffix = ((LONG_CADENCE_QUARTER_PREFIXES, "llc")
-                                      if long_cadence else
-                                      (SHORT_CADENCE_QUARTER_PREFIXES, "slc"))
+  #quarter_prefixes, cadence_suffix = ((LONG_CADENCE_QUARTER_PREFIXES, "llc")
+                                      #if long_cadence else
+                                      #(SHORT_CADENCE_QUARTER_PREFIXES, "slc"))
 
-  if quarters is None:
-    quarters = quarter_prefixes.keys()
+  #if quarters is None:
+    #quarters = quarter_prefixes.keys()
 
-  quarters = sorted(quarters)  # Sort quarters chronologically.
+  #quarters = sorted(quarters)  # Sort quarters chronologically.
 
   filenames = []
-  base_dir = os.path.join(base_dir, kep_id[0:4], kep_id)
-  for quarter in quarters:
-    for quarter_prefix in quarter_prefixes[quarter]:
-      if injected_group:
-        base_name = "kplr%s-%s_INJECTED-%s_%s.fits" % (kep_id, quarter_prefix,
-                                                       injected_group,
-                                                       cadence_suffix)
-      else:
-        base_name = "kplr%s-%s_%s.fits" % (kep_id, quarter_prefix,
-                                           cadence_suffix)
-      filename = os.path.join(base_dir, base_name)
+  base_dir = os.path.join(base_dir, campaign, "packagedr2")
+  #for quarter in quarters:
+    #for quarter_prefix in quarter_prefixes[quarter]:
+      #if injected_group:
+        #base_name = "kplr%s-%s_INJECTED-%s_%s.fits" % (kep_id, quarter_prefix,
+                                                       #injected_group,
+                                                       #cadence_suffix)
+      #else:
+        #base_name = "kplr%s-%s_%s.fits" % (kep_id, quarter_prefix,
+                                           #cadence_suffix)
+      #filename = os.path.join(base_dir, base_name)
       # Not all stars have data for all quarters.
-      if not check_existence or os.path.isfile(filename):
+   base_name = "ep%s.csv" % kep_id
+   filename = os.path.join(base_dir, base_name)
+   if not check_existence or os.path.isfile(filename):
         filenames.append(filename)
 
   return filenames
@@ -160,10 +163,13 @@ def read_kepler_light_curve(filenames,
   all_flux = []
 
   for filename in filenames:
-    with fits.open(open(filename, "rb")) as hdu_list:
-      light_curve = hdu_list[light_curve_extension].data
-      time = light_curve.TIME
-      flux = light_curve.PDCSAP_FLUX
+    #with fits.open(open(filename, "rb")) as hdu_list:
+      #light_curve = hdu_list[light_curve_extension].data
+      #time = light_curve.TIME
+      #flux = light_curve.PDCSAP_FLUX
+    data = np.loadtxt(filename, delimiter=',', usecols=(0,1))
+    time = data[:,0]
+    flue = data[:,1]
 
     # Remove NaN flux values.
     valid_indices = np.where(np.isfinite(flux))
