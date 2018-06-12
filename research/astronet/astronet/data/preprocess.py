@@ -48,7 +48,7 @@ def read_and_process_light_curve(kepid, kepler_data_dir, max_gap_width=0.75):
   # Read the Kepler light curve.
   file_names = kepler_io.kepler_filenames(kepler_data_dir, kepid)
   if not file_names:
-    raise IOError("Failed to find .fits files in %s for Kepler ID %s" %
+    raise IOError("Failed to find .csv file in %s for EPIC ID %s" %
                   (kepler_data_dir, kepid))
 
   all_time, all_flux = kepler_io.read_kepler_light_curve(file_names)
@@ -143,7 +143,7 @@ def generate_view(time, flux, num_bins, bin_width, t_min, t_max,
   return view
 
 
-def global_view(time, flux, period, num_bins=2001, bin_width_factor=1 / 2001):
+def global_view(time, flux, period, num_bins=1001, bin_width_factor=1 / 1001):
   """Generates a 'global view' of a phase folded light curve.
 
   See Section 3.3 of Shallue & Vanderburg, 2018, The Astronomical Journal.
@@ -173,7 +173,7 @@ def local_view(time,
                flux,
                period,
                duration,
-               num_bins=201,
+               num_bins=101,
                bin_width_factor=0.16,
                num_durations=4):
   """Generates a 'local view' of a phase folded light curve.
