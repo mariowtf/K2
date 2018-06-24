@@ -93,7 +93,7 @@ def choose_kepler_spline(all_time,
                          bkspaces,
                          maxiter=5,
                          penalty_coeff=1.0,
-                         verbose=True):
+                         verbose=False):
   """Computes the best-fit Kepler spline across a break-point spacings.
 
   Some Kepler light curves have low-frequency variability, while others have
@@ -134,6 +134,8 @@ def choose_kepler_spline(all_time,
   # spline model.
   abs_deviations = np.concatenate([np.abs(f[1:] - f[:-1]) for f in all_flux])
   sigma = np.median(abs_deviations) * 1.48 / np.sqrt(2)
+  if sigma==0:
+      raise ValueError()
 
   best_bic = None
   best_spline = None

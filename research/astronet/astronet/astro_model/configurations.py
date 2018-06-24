@@ -42,9 +42,9 @@ def base():
 
           # Label string to integer id.
           "label_map": {
-              "PC": 1,  # Planet Candidate.
-              "AFP": 0,  # Astrophysical False Positive.
-              "NTP": 0,  # Non-Transiting Phenomenon.
+              " C": 1,  # Planet Candidate.
+              " J": 0,  # Astrophysical False Positive.
+              " E": 0,  # Non-Transiting Phenomenon.
           },
       },
       # Hyperparameters for building and training the model.

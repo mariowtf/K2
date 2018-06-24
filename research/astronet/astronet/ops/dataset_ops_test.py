@@ -335,7 +335,7 @@ class BuildDatasetTest(tf.test.TestCase):
 
   def testLabels1(self):
     self._input_config["label_feature"] = "label_str"
-    self._input_config["label_map"] = {"PC": 0, "AFP": 1, "NTP": 2}
+    self._input_config["label_map"] = {" C": 0, " J": 1, " E": 2}
 
     dataset = dataset_ops.build_dataset(
         file_pattern=self._file_pattern,
@@ -367,7 +367,7 @@ class BuildDatasetTest(tf.test.TestCase):
 
   def testLabels2(self):
     self._input_config["label_feature"] = "label_str"
-    self._input_config["label_map"] = {"PC": 1, "AFP": 0, "NTP": 0}
+    self._input_config["label_map"] = {" C": 1, " J": 0, " E": 0}
 
     dataset = dataset_ops.build_dataset(
         file_pattern=self._file_pattern,
@@ -401,7 +401,7 @@ class BuildDatasetTest(tf.test.TestCase):
     self._input_config["label_feature"] = "label_str"
 
     # Label ids should be contiguous integers starting at 0.
-    self._input_config["label_map"] = {"PC": 1, "AFP": 2, "NTP": 3}
+    self._input_config["label_map"] = {" C": 1, " J": 2, " E": 3}
 
     with self.assertRaises(ValueError):
       dataset_ops.build_dataset(

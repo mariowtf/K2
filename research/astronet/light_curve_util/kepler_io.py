@@ -22,55 +22,56 @@ import os.path
 
 from astropy.io import fits
 import numpy as np
+import scipy.io
 
 
-LONG_CADENCE_TIME_DELTA_DAYS = 0.02043422  # Approximately 29.4 minutes.
+# LONG_CADENCE_TIME_DELTA_DAYS = 0.02043422  # Approximately 29.4 minutes.
 
-# Quarter index to filename prefix for long cadence Kepler data.
-# Reference: https://archive.stsci.edu/kepler/software/get_kepler.py
-LONG_CADENCE_QUARTER_PREFIXES = {
-    0: ["2009131105131"],
-    1: ["2009166043257"],
-    2: ["2009259160929"],
-    3: ["2009350155506"],
-    4: ["2010078095331", "2010009091648"],
-    5: ["2010174085026"],
-    6: ["2010265121752"],
-    7: ["2010355172524"],
-    8: ["2011073133259"],
-    9: ["2011177032512"],
-    10: ["2011271113734"],
-    11: ["2012004120508"],
-    12: ["2012088054726"],
-    13: ["2012179063303"],
-    14: ["2012277125453"],
-    15: ["2013011073258"],
-    16: ["2013098041711"],
-    17: ["2013131215648"]
-}
+# # Quarter index to filename prefix for long cadence Kepler data.
+# # Reference: https://archive.stsci.edu/kepler/software/get_kepler.py
+# LONG_CADENCE_QUARTER_PREFIXES = {
+#     0: ["2009131105131"],
+#     1: ["2009166043257"],
+#     2: ["2009259160929"],
+#     3: ["2009350155506"],
+#     4: ["2010078095331", "2010009091648"],
+#     5: ["2010174085026"],
+#     6: ["2010265121752"],
+#     7: ["2010355172524"],
+#     8: ["2011073133259"],
+#     9: ["2011177032512"],
+#     10: ["2011271113734"],
+#     11: ["2012004120508"],
+#     12: ["2012088054726"],
+#     13: ["2012179063303"],
+#     14: ["2012277125453"],
+#     15: ["2013011073258"],
+#     16: ["2013098041711"],
+#     17: ["2013131215648"]
+# }
 
 # Quarter index to filename prefix for short cadence Kepler data.
 # Reference: https://archive.stsci.edu/kepler/software/get_kepler.py
-SHORT_CADENCE_QUARTER_PREFIXES = {
-    0: ["2009131110544"],
-    1: ["2009166044711"],
-    2: ["2009201121230", "2009231120729", "2009259162342"],
-    3: ["2009291181958", "2009322144938", "2009350160919"],
-    4: ["2010009094841", "2010019161129", "2010049094358", "2010078100744"],
-    5: ["2010111051353", "2010140023957", "2010174090439"],
-    6: ["2010203174610", "2010234115140", "2010265121752"],
-    7: ["2010296114515", "2010326094124", "2010355172524"],
-    8: ["2011024051157", "2011053090032", "2011073133259"],
-    9: ["2011116030358", "2011145075126", "2011177032512"],
-    10: ["2011208035123", "2011240104155", "2011271113734"],
-    11: ["2011303113607", "2011334093404", "2012004120508"],
-    12: ["2012032013838", "2012060035710", "2012088054726"],
-    13: ["2012121044856", "2012151031540", "2012179063303"],
-    14: ["2012211050319", "2012242122129", "2012277125453"],
-    15: ["2012310112549", "2012341132017", "2013011073258"],
-    16: ["2013017113907", "2013065031647", "2013098041711"],
-    17: ["2013121191144", "2013131215648"]
-}
+# SHORT_CADENCE_QUARTER_PREFIXES = {
+#     0: ["2009131110544"],
+#     1: ["2009166044711"],
+#     2: ["2009201121230", "2009231120729", "2009259162342"],
+#     3: ["2009291181958", "2009322144938", "2009350160919"],
+#     4: ["2010009094841", "2010019161129", "2010049094358", "2010078100744"],
+#     5: ["2010111051353", "2010140023957", "2010174090439"],
+#     6: ["2010203174610", "2010234115140", "2010265121752"],
+#     7: ["2010296114515", "2010326094124", "2010355172524"],
+#     8: ["2011024051157", "2011053090032", "2011073133259"],
+#     9: ["2011116030358", "2011145075126", "2011177032512"],
+#     10: ["2011208035123", "2011240104155", "2011271113734"],
+#     11: ["2011303113607", "2011334093404", "2012004120508"],
+#     12: ["2012032013838", "2012060035710", "2012088054726"],
+#     13: ["2012121044856", "2012151031540", "2012179063303"],
+#     14: ["2012211050319", "2012242122129", "2012277125453"],
+#     15: ["2012310112549", "2012341132017", "2013011073258"],
+#     16: ["2013017113907", "2013065031647", "2013098041711"],
+#     17: ["2013121191144", "2013131215648"]
+# }
 
 
 def kepler_filenames(base_dir,
@@ -111,35 +112,14 @@ def kepler_filenames(base_dir,
   Returns:
     A list of filenames.
   """
-  # Pad the Kepler id with zeros to length 9.
-  #kep_id = "%.9d" % int(kep_id)
-
-  #quarter_prefixes, cadence_suffix = ((LONG_CADENCE_QUARTER_PREFIXES, "llc")
-                                      #if long_cadence else
-                                      #(SHORT_CADENCE_QUARTER_PREFIXES, "slc"))
-
-  #if quarters is None:
-    #quarters = quarter_prefixes.keys()
-
-  #quarters = sorted(quarters)  # Sort quarters chronologically.
 
   filenames = []
-  base_dir = os.path.join(base_dir, campaign, "packagedr2")
-  #for quarter in quarters:
-    #for quarter_prefix in quarter_prefixes[quarter]:
-      #if injected_group:
-        #base_name = "kplr%s-%s_INJECTED-%s_%s.fits" % (kep_id, quarter_prefix,
-                                                       #injected_group,
-                                                       #cadence_suffix)
-      #else:
-        #base_name = "kplr%s-%s_%s.fits" % (kep_id, quarter_prefix,
-                                           #cadence_suffix)
-      #filename = os.path.join(base_dir, base_name)
-      # Not all stars have data for all quarters.
-   base_name = "ep%s.csv" % kep_id
-   filename = os.path.join(base_dir, base_name)
-   if not check_existence or os.path.isfile(filename):
-        filenames.append(filename)
+  base_dir = os.path.join(base_dir, campaign, "forsearch")
+
+  base_name = "ep%ssearch.idl" % kep_id
+  filename = os.path.join(base_dir, base_name)
+  if not check_existence or os.path.isfile(filename):
+    filenames.append(filename)
 
   return filenames
 
@@ -163,18 +143,22 @@ def read_kepler_light_curve(filenames,
   all_flux = []
 
   for filename in filenames:
-    #with fits.open(open(filename, "rb")) as hdu_list:
-      #light_curve = hdu_list[light_curve_extension].data
-      #time = light_curve.TIME
-      #flux = light_curve.PDCSAP_FLUX
-    data = np.loadtxt(filename, delimiter=',', usecols=(0,1))
-    time = data[:,0]
-    flue = data[:,1]
+    # with fits.open(open(filename, "rb")) as hdu_list:
+    #   light_curve = hdu_list[light_curve_extension].data
+    #   time = light_curve.TIME
+    #   flux = light_curve.PDCSAP_FLUX
+    # data = np.loadtxt(filename, delimiter=',', usecols=(0,1))
+    # time = data[:,0]
+    # flux = data[:,1]
+    s = scipy.io.readsav(filename)
+    time =  s.k.t[0]
+    flux =  s.k.f[0]
 
     # Remove NaN flux values.
     valid_indices = np.where(np.isfinite(flux))
     time = time[valid_indices]
     flux = flux[valid_indices]
+    #print(flux)
 
     if invert:
       flux *= -1

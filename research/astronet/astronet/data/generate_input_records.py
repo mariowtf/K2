@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-r"""Script to preprocesses data from the Kepler space telescope.
+"""Script to preprocesses data from the Kepler space telescope.
 
 This script produces training, validation and test sets of labeled Kepler
 Threshold Crossing Events (TCEs). A TCE is a detected periodic event on a
@@ -126,15 +126,9 @@ parser.add_argument(
     default=5,
     help="Number of subprocesses for processing the TCEs in parallel.")
 
-parser.add_argument(
-    "--K2_campaign",
-    type=str,
-    required=True,
-    help="Campaign where data was taken.")
-
 # Name and values of the column in the input CSV file to use as training labels.
 _LABEL_COLUMN = "av_training_set"
-_ALLOWED_LABELS = {"C", "J", "E"}
+_ALLOWED_LABELS = {" C", " J", " E"}
 
 
 def _set_float_feature(ex, name, value):
@@ -169,18 +163,29 @@ def _process_tce(tce):
     IOError: If the light curve files for this Kepler ID cannot be found.
   """
   # Read and process the light curve.
-  time, flux = preprocess.read_and_process_light_curve(tce.kepid,
-                                                       FLAGS.kepler_data_dir, FLAGS.K2_campaign)
+  CAMPAIGN = "C"+str(tce.campaign)
+
+  # Make output proto.
+  ex = tf.train.Example()
+
+  try:
+    time, flux = preprocess.read_and_process_light_curve(tce.kepid,
+                                                        FLAGS.kepler_data_dir, CAMPAIGN)
+  except ValueError:
+    print("NO SIGMA????? ep"+str(tce.kepid))
+    return None
+
   time, flux = preprocess.phase_fold_and_sort_light_curve(
       time, flux, tce.tce_period, tce.tce_time0bk)
 
   # Generate the local and global views.
-  global_view = preprocess.global_view(time, flux, tce.tce_period)
-  local_view = preprocess.local_view(time, flux, tce.tce_period,
+  try:
+    global_view = preprocess.global_view(time, flux, tce.tce_period)
+    local_view = preprocess.local_view(time, flux, tce.tce_period,
                                      tce.tce_duration)
-
-  # Make output proto.
-  ex = tf.train.Example()
+  except ValueError:
+    print("BROKEN LIGHTCURVE????? ep"+str(tce.kepid))
+    return None
 
   # Set time series features.
   _set_float_feature(ex, "global_view", global_view)
@@ -220,7 +225,7 @@ def _process_file_shard(tce_table, file_name):
         writer.write(example.SerializeToString())
 
       num_processed += 1
-      if not num_processed % 10:
+      if not num_processed % 100:
         tf.logging.info("%s: Processed %d/%d items in shard %s", process_name,
                         num_processed, shard_size, shard_name)
 
