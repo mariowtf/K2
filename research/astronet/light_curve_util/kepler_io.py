@@ -150,6 +150,8 @@ def read_kepler_light_curve(filenames,
     # data = np.loadtxt(filename, delimiter=',', usecols=(0,1))
     # time = data[:,0]
     # flux = data[:,1]
+    #print(filename)
+    
     s = scipy.io.readsav(filename)
     time =  s.k.t[0]
     flux =  s.k.f[0]

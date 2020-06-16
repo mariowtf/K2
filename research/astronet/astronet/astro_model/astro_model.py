@@ -206,6 +206,8 @@ class AstroModel(object):
           axis=1,
           name="pre_logits_concat")
 
+    #pre_logits_concat = tf.clip_by_value(pre_logits_concat, clip_value_min=-1, clip_value_max=1)
+
     net = pre_logits_concat
     with tf.variable_scope("pre_logits_hidden"):
       for i in range(self.hparams.num_pre_logits_hidden_layers):
@@ -227,7 +229,11 @@ class AstroModel(object):
     logits = tf.layers.dense(
         inputs=net, units=self.hparams.output_dim, name="logits")
 
+
+
     self.pre_logits_concat = pre_logits_concat
+
+    #logits = tf.clip_by_value(logits, clip_value_min=-10, clip_value_max=10)
     self.logits = logits
 
   def build_predictions(self):
@@ -299,6 +305,30 @@ class AstroModel(object):
     self.build_aux_hidden_layers()
     self.build_logits()
     self.build_predictions()
+
+    # tf.summary.scalar("num_candidates", tf.reduce_sum(self.labels))
+    # tf.summary.scalar("num_predicted_candidates", tf.reduce_sum(
+    #                   tf.to_int32(tf.greater(self.predictions, 0.5))))
+
+    # tf.summary.scalar("logits/min", tf.reduce_min(self.logits))
+    # tf.summary.scalar("logits/max", tf.reduce_max(self.logits))
+    # tf.summary.scalar("logits/mean", tf.reduce_mean(self.logits))
+
+    # with tf.variable_scope("logits", reuse=True):
+    #   kernel=tf.get_variable("kernel")
+    #   bias=tf.get_variable("bias")
+
+    # tf.summary.scalar("kernel/min", tf.reduce_min(kernel))
+    # tf.summary.scalar("kernel/max", tf.reduce_max(kernel))
+    # tf.summary.scalar("kernel/mean", tf.reduce_mean(kernel))
+    # tf.summary.scalar("kernel/L2_norm", tf.nn.l2_loss(kernel))
+
+
+    # tf.summary.scalar("bias/min", tf.reduce_min(bias))
+    # tf.summary.scalar("bias/max", tf.reduce_max(bias))
+    # tf.summary.scalar("bias/mean", tf.reduce_mean(bias))
+    # tf.summary.scalar("bias/L2_norm", tf.nn.l2_loss(bias))
+
 
     if self.mode in [tf.estimator.ModeKeys.TRAIN, tf.estimator.ModeKeys.EVAL]:
       self.build_losses()

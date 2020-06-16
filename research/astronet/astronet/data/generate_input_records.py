@@ -186,6 +186,10 @@ def _process_tce(tce):
   except ValueError:
     print("BROKEN LIGHTCURVE????? ep"+str(tce.kepid))
     return None
+  except Exception as e:
+    print(e.args)
+    print("Bins Broken ep"+str(tce.kepid))
+    return None
 
   # Set time series features.
   _set_float_feature(ex, "global_view", global_view)
@@ -236,6 +240,8 @@ def _process_file_shard(tce_table, file_name):
 def main(argv):
   del argv  # Unused.
 
+  tf.logging.info("This is the old procedure")
+
   # Make the output directory if it doesn't already exist.
   tf.gfile.MakeDirs(FLAGS.output_dir)
 
@@ -270,6 +276,7 @@ def main(argv):
       "Partitioned %d TCEs into training (%d), validation (%d) and test (%d)",
       num_tces, len(train_tces), len(val_tces), len(test_tces))
 
+
   # Further split training TCEs into file shards.
   file_shards = []  # List of (tce_table_shard, file_name).
   boundaries = np.linspace(0, len(train_tces),
@@ -280,7 +287,7 @@ def main(argv):
     file_shards.append((train_tces[start:end], os.path.join(
         FLAGS.output_dir, "train-%.5d-of-%.5d" % (i, FLAGS.num_train_shards))))
 
-  # Validation and test sets each have a single shard.
+  #Validation and test sets each have a single shard.
   file_shards.append((val_tces, os.path.join(FLAGS.output_dir,
                                              "val-00000-of-00001")))
   file_shards.append((test_tces, os.path.join(FLAGS.output_dir,

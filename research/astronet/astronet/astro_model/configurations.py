@@ -32,7 +32,7 @@ def base():
           # Feature specifications.
           "features": {
               "global_view": {
-                  "length": 2001,
+                  "length": 701,
                   "is_time_series": True,
               },
           },
@@ -43,8 +43,8 @@ def base():
           # Label string to integer id.
           "label_map": {
               " C": 1,  # Planet Candidate.
-              " J": 0,  # Astrophysical False Positive.
-              " E": 0,  # Non-Transiting Phenomenon.
+              " J": 0,  # Jump.
+              " E": 0,  # Eclipsing Binary.
           },
       },
       # Hyperparameters for building and training the model.
@@ -63,7 +63,7 @@ def base():
           "batch_size": 64,
 
           # Learning rate parameters.
-          "learning_rate": 1e-5,
+          "learning_rate": 1e-4,
           "learning_rate_decay_steps": 0,
           "learning_rate_decay_factor": 0,
           "learning_rate_decay_staircase": True,

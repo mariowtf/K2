@@ -25,6 +25,7 @@ from light_curve_util import kepler_io
 from light_curve_util import median_filter
 from light_curve_util import util
 from third_party.kepler_spline import kepler_spline
+from third_party.robust_mean import robust_mean
 
 
 def read_and_process_light_curve(kepid, kepler_data_dir, campaign, max_gap_width=0.75):
@@ -49,6 +50,7 @@ def read_and_process_light_curve(kepid, kepler_data_dir, campaign, max_gap_width
   # Read the Kepler light curve.
   file_names = kepler_io.kepler_filenames(kepler_data_dir, kepid, campaign)
   if not file_names:
+    print(campaign)
     raise IOError("Failed to find .idl file in %s for EPIC ID %s" %
                   (kepler_data_dir, kepid))
 
@@ -86,6 +88,23 @@ def read_and_process_light_curve(kepid, kepler_data_dir, campaign, max_gap_width
   # "Flatten" the light curve (remove low-frequency variability) by dividing by
   # the spline.
   flux /= spline
+
+  #Remove points where the thrusters are on
+  #using s.data.moving
+
+  #Remove points where the xcenter is off
+  #using.s.data.xc
+
+  #Remove points where the background flux is off
+  #using s.data.medians
+
+  #Let's remove upward outliers?
+  deviation = flux - np.median(flux)
+  is_upward_outlier = np.logical_not(robust_mean.robust_mean(deviation, cut=3)[2])
+  np.logical_and(is_upward_outlier, deviation > 0, out=is_upward_outlier)
+
+  flux = flux[~is_upward_outlier]
+  time = time[~is_upward_outlier]
 
   return time, flux
 

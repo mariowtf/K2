@@ -59,11 +59,11 @@ def local_global():
   # Override the model features to be local_view and global_view time series.
   config["inputs"]["features"] = {
       "local_view": {
-          "length": 201,
+          "length": 51,
           "is_time_series": True,
       },
       "global_view": {
-          "length": 2001,
+          "length": 701,
           "name_in_proto": "light_curve",
           "is_time_series": True,
           "data_source": "",

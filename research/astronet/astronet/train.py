@@ -31,7 +31,10 @@ from astronet.util import estimator_util
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-    "--model", type=str, required=True, help="Name of the model class.")
+    "--model", 
+    type=str, 
+    required=True, 
+    help="Name of the model class.")
 
 parser.add_argument(
     "--config_name",
@@ -67,13 +70,13 @@ parser.add_argument(
 parser.add_argument(
     "--train_steps",
     type=int,
-    default=10000,
+    default=4000,
     help="Total number of steps to train the model for.")
 
 parser.add_argument(
     "--shuffle_buffer_size",
     type=int,
-    default=15000,
+    default=24000,
     help="Size of the shuffle buffer for the training dataset.")
 
 
@@ -91,7 +94,8 @@ def main(_):
   config_util.log_and_save_config(config, FLAGS.model_dir)
 
   # Create the estimator.
-  run_config = tf.estimator.RunConfig(keep_checkpoint_max=1)
+  run_config = tf.estimator.RunConfig(keep_checkpoint_max=1,
+                                      save_checkpoints_steps=100, save_summary_steps=10)
   estimator = estimator_util.create_estimator(model_class, config.hparams,
                                               run_config, FLAGS.model_dir)
 
@@ -117,7 +121,8 @@ def main(_):
         estimator=estimator,
         train_input_fn=train_input_fn,
         eval_input_fn=eval_input_fn,
-        train_steps=FLAGS.train_steps):
+        train_steps=FLAGS.train_steps,
+        local_eval_frequency=100):
       # continuous_train_and_eval() yields evaluation metrics after each
       # training epoch. We don't do anything here.
       pass

@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
+import scipy
 
 
 def median_filter(x, y, num_bins, bin_width=None, x_min=None, x_max=None):
@@ -100,6 +101,8 @@ def median_filter(x, y, num_bins, bin_width=None, x_min=None, x_max=None):
   j_start = x_start  # Inclusive left index of the current bin.
   j_end = x_start  # Exclusive end index of the current bin.
 
+  bins = np.zeros(num_bins) #if empty set to zero instead
+
   for i in range(num_bins):
     # Move j_start to the first index of x >= bin_min.
     while j_start < x_len and x[j_start] < bin_min:
@@ -112,9 +115,25 @@ def median_filter(x, y, num_bins, bin_width=None, x_min=None, x_max=None):
     if j_end > j_start:
       # Compute and insert the median bin value.
       result[i] = np.median(y[j_start:j_end])
+      bins[i] = np.median(y[j_start:j_end])
 
     # Advance the bin.
     bin_min += bin_spacing
     bin_max += bin_spacing
 
-  return result
+  cut = np.isin(bins, 0)
+  range_bins = np.array(range(num_bins))
+  flux_val = bins[~cut]
+  cut_bins = range_bins[~cut]
+
+  cut_off = float(num_bins) * 0.33
+  
+  if num_bins > 500:
+    if len(cut_bins) < cut_off:
+      print(len(cut_bins))
+      raise Exception(len(cut_bins))
+
+  f = scipy.interpolate.interp1d(cut_bins,flux_val,fill_value="extrapolate")
+  flux_new = f(range_bins)
+
+  return flux_new

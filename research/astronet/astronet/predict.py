@@ -155,6 +155,8 @@ def main(_):
 
   # Read and process the input features.
   features = _process_tce(config.inputs.features)
+  print(type(features))
+  print(features)
 
   # Create an input function.
   def input_fn():
