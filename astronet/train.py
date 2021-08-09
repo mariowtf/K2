@@ -28,12 +28,14 @@ from astronet.util import config_util
 from astronet.util import configdict
 from astronet.util import estimator_util
 
+import time
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-    "--model", 
-    type=str, 
-    required=True, 
+    "--model",
+    type=str,
+    required=True,
     help="Name of the model class.")
 
 parser.add_argument(
@@ -81,6 +83,10 @@ parser.add_argument(
 
 
 def main(_):
+  start = time.time()
+  print("STARTTTTT",start)
+  #print("*FLAGS*",FLAGS)
+  #print("*FLAGS*model", type(FLAGS.model))
   model_class = models.get_model_class(FLAGS.model)
 
   # Look up the model configuration.
@@ -126,9 +132,12 @@ def main(_):
       # continuous_train_and_eval() yields evaluation metrics after each
       # training epoch. We don't do anything here.
       pass
-
+  end=time.time()
+  print("****tiempo",end - start)
 
 if __name__ == "__main__":
+
   tf.logging.set_verbosity(tf.logging.INFO)
   FLAGS, unparsed = parser.parse_known_args()
   tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+
