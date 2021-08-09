@@ -25,11 +25,27 @@ from astronet.astro_fc_model import configurations as astro_fc_configurations
 from astronet.astro_model import astro_model
 from astronet.astro_model import configurations as astro_configurations
 
+from astronet.astro_cnn_model_mario import astro_cnn_model_mario
+from astronet.astro_cnn_model_mario import configurations_mario as astro_cnn_configurations_mario
+
+from astronet.astro_rnn_model import astro_rnn_model_mario
+from astronet.astro_rnn_model import configurations_mario as astro_rnn_configurations_mario
+
+from astronet.astro_lstm_model import astro_lstm_model_mario
+from astronet.astro_lstm_model import configurations_mario as astro_lstm_configurations_mario
+
+from astronet.astro_gru_model import astro_gru_model_mario
+from astronet.astro_gru_model import configurations_mario as astro_gru_configurations_mario
+
 # Dictionary of model name to (model_class, configuration_module).
 _MODELS = {
     "AstroModel": (astro_model.AstroModel, astro_configurations),
     "AstroFCModel": (astro_fc_model.AstroFCModel, astro_fc_configurations),
     "AstroCNNModel": (astro_cnn_model.AstroCNNModel, astro_cnn_configurations),
+    "AstroCNNModelMario": (astro_cnn_model_mario.AstroCNNModelMario, astro_cnn_configurations_mario),
+    "AstroRNNModelMario": (astro_rnn_model_mario.AstroRNNModelMario, astro_rnn_configurations_mario),
+    "AstroLSTMModelMario": (astro_lstm_model_mario.AstroLSTMModelMario, astro_lstm_configurations_mario),
+    "AstroGRUModelMario": (astro_gru_model_mario.AstroGRUModelMario, astro_gru_configurations_mario)
 }
 
 
