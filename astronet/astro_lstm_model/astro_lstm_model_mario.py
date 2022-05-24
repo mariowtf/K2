@@ -137,9 +137,6 @@ class AstroLSTMModelMario(astro_model_mario.AstroModelMario):
                         stacked_outputs = tf.layers.dense(stacked_rnn_output, 1)
                         outputs = tf.reshape(stacked_outputs, [-1, 20, 1])
 
-            print("*******NET****", net)
-            print("**type*", type(net))
-            print("**get shape***", net.get_shape())
             # Flatten.
             net.get_shape().assert_has_rank(3)
             net_shape = net.get_shape().as_list()

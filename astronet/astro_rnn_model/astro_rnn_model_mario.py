@@ -105,9 +105,7 @@ class AstroRNNModelMario(astro_model_mario.AstroModelMario):
                         stacked_outputs = tf.layers.dense(stacked_rnn_output, 1)
                         outputs = tf.reshape(stacked_outputs, [-1, 20, 1])
                         # Flatten.
-            print("**get shape***", net.get_shape())
-            print("*******NET****", net)
-            print("**type*", type(net))
+
             net.get_shape().assert_has_rank(3)
             net_shape = net.get_shape().as_list()
             output_dim = net_shape[1] * net_shape[2]

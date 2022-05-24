@@ -49,7 +49,7 @@ from __future__ import print_function
 import tensorflow as tf
 
 from astronet.astro_model_mario import astro_model_mario
-from astronet.astro_model import astro_model
+#from astronet.astro_model import astro_model
 
 
 class AstroCNNModelMario(astro_model_mario.AstroModelMario):
@@ -118,8 +118,7 @@ class AstroCNNModelMario(astro_model_mario.AstroModelMario):
             net_shape = net.get_shape().as_list()
             output_dim = net_shape[1] * net_shape[2]
             net = tf.reshape(net, [-1, output_dim], name="flatten")
-            print("*******NET****",net)
-            print("**type*",type(net))
+
         return net
 
     def build_time_series_hidden_layers(self):
